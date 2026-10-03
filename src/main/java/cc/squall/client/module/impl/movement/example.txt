@@ -1,0 +1,25 @@
+package cc.squall.client.module.impl;
+
+import cc.squall.client.module.Module;
+import cc.squall.client.module.ModuleAnnotation;
+
+@ModuleAnnotation
+public class FlightModule extends Module {
+
+    public FlightModule() {
+        super("Flight", "Lets you fly", Category.MOVEMENT, false);
+    }
+
+    @Override
+    public void onEnable() {
+    }
+
+    @Override
+    public void onDisable() {
+
+    }
+
+    @Override
+    public void onUpdate() {
+    }
+}

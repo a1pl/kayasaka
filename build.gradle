@@ -1,0 +1,85 @@
+plugins {
+    id 'java'
+    id "com.github.johnrengelman.shadow" version '8.1.1'
+}
+
+group = 'asia.physicser'
+version = '1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "tigr.dev"
+        url = "https://maven.tigr.dev"
+    }
+}
+
+def osName = System.getProperty('os.name').toLowerCase()
+def osArch = System.getProperty('os.arch').toLowerCase()
+
+def lwjglVersion = '3.3.2'
+def lwjglNatives = osName.contains('win') ? 'natives-windows' : (osName.contains('mac') ? 'natives-macos' : 'natives-linux')
+
+def skijaVersion = '0.143.17' // good enough
+def skijaOs = osName.contains('win') ? 'windows' : (osName.contains('mac') ? 'macos' : 'linux')
+def skijaArch = (osArch.contains('aarch64') || osArch.contains('arm64')) ? 'arm64' : 'x64'
+
+dependencies {
+    // Vanilla Minecraft
+    implementation fileTree(dir: 'libs/minecraft', includes: ['*.jar'], excludes: ['lwjgl*.jar', 'netty*.jar'])
+
+    implementation 'io.netty:netty-all:4.1.94.Final'
+    implementation 'org.antlr:antlr4-runtime:4.9.2'
+
+    implementation platform("org.lwjgl:lwjgl-bom:${lwjglVersion}")
+    ['lwjgl', 'lwjgl-glfw', 'lwjgl-openal', 'lwjgl-opencl', 'lwjgl-opengl', 'lwjgl-opengles'].each {
+        implementation "org.lwjgl:${it}"
+        if (it != 'lwjgl-opencl') {
+            runtimeOnly "org.lwjgl:${it}::${lwjglNatives}"
+        }
+    }
+    implementation fileTree(dir: 'libs', includes: ['Via*.jar'])
+    implementation "dev.tigr:simpleevents:1.3"
+
+    implementation "io.github.humbleui:skija-shared:${skijaVersion}"
+    implementation "io.github.humbleui:skija-${skijaOs}-${skijaArch}:${skijaVersion}"
+
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    compileOnly project(':module-processor')
+    annotationProcessor project(':module-processor')
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.fork = true
+    options.forkOptions.memoryMaximumSize = '3g'
+}
+
+shadowJar {
+    archiveClassifier.set('all')
+
+    configurations = [project.configurations.runtimeClasspath]
+}
+
+tasks.build {
+    dependsOn shadowJar
+}
+
+tasks.register('runClient', JavaExec) {
+    mainClass = 'Start'
+    classpath = sourceSets.test.runtimeClasspath
+    jvmArgs = ['-Djava.library.path=natives/']
+
+    workingDir = file('run/')
+
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}

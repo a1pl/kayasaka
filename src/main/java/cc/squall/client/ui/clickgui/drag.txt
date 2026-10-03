@@ -1,0 +1,23 @@
+w3schools drag html css
+
+https://www.w3schools.com/howto/howto_js_draggable.asp
+
+onPress:
+  if (mouseX >= boxX && mouseX <= boxX + boxWidth &&
+      mouseY >= boxY && mouseY <= boxY + boxHeight) {
+      dragging    = true
+      grabOffsetX = mouseX - boxX
+      grabOffsetY = mouseY - boxY
+  }
+
+onMove:
+  if (dragging) {
+      boxX = mouseX - grabOffsetX
+      boxY = mouseY - grabOffsetY
+
+      boxX = min(max(0, boxX), screenWidth  - boxWidth)
+      boxY = min(max(0, boxY), screenHeight - boxHeight)
+  }
+
+onRelease:
+  dragging = false

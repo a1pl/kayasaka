@@ -1,0 +1,20 @@
+Canvas pane spawns in on right shift
+Clickgui manager spawns in, for current clickgui, each panel with recorded earlier/default location of each pane, along with currently opened module/settings in a big tree that manager scales down and enables each one before render/ during onRender.
+Components tree:
+component
+EditableComponent extends component
+LimitedEditableComponent extends EditableComponent
+IntComponent extends LimitedEditableComponent
+StringComponent extends EditableComponent
+DropdownComponent extends Component
+AddableDropdownComponent extends DropdownComponent
+ListComponent extends AddableDropdownComponent  ( add list setting)
+EnumComponent extends DropdownComponent (add enum setting)
+SearchableComponent extends DropdownComponent
+AddableSearchableComponent extends DropdownComponent
+
+ToggleComponent extends EditableComponent
+
+Pane component extends component
+Panel extends pane
+
