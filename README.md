@@ -9,7 +9,7 @@ dli152 for motivation
 animations:
 fan v4
 yuri
-flux (unlegit's old client)
+flux (unlegit had on gh)
 openheaven
 
 extra datatypes:
